@@ -1,4 +1,4 @@
-const CACHE_NAME = "performance-cache-v2";
+const CACHE_NAME = "performance-cache-v3";
 
 const urlsToCache = [
   "./",
@@ -21,9 +21,9 @@ self.addEventListener("fetch", event => {
 });
 
 self.addEventListener("message", event => {
-  if (event.data === "showNotification") {
-    self.registration.showNotification("🌿 Hora do Mix!", {
-      body: "07:30 — Tome sua dose para máxima performance 💪",
+  if (event.data.type === "notify") {
+    self.registration.showNotification(event.data.title, {
+      body: event.data.body,
       icon: "icon-192.png",
       badge: "icon-192.png"
     });
