@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Performance Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10b981">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen p-6">
+
+<div class="max-w-6xl mx-auto space-y-6">
+
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-emerald-400">⚡ Performance Dashboard</h1>
+    <div id="cycleStatus" class="px-4 py-2 rounded-xl font-semibold"></div>
+  </div>
+
+  <div class="grid md:grid-cols-4 gap-4">
+    <button onclick="toggle(this)" class="task bg-slate-800 p-4 rounded-2xl">
+      💧 06:00 Água 500ml
+    </button>
+    <button onclick="toggle(this)" class="task bg-slate-800 p-4 rounded-2xl">
+      🍌 06:15 Café leve
+    </button>
+    <button onclick="toggle(this)" class="task bg-slate-800 p-4 rounded-2xl">
+      🌿 07:30 Mix
+    </button>
+    <button onclick="toggle(this)" class="task bg-slate-800 p-4 rounded-2xl">
+      🏋️ 08:30 Treino
+    </button>
+  </div>
+
+  <div class="bg-slate-800 p-6 rounded-2xl">
+    <h2 class="text-xl font-semibold mb-3 text-emerald-400">Dose do Mix</h2>
+    <select id="dose" class="bg-slate-700 p-2 rounded-lg">
+      <option value="5g">5g (leve)</option>
+      <option value="10g">10g (treino intenso)</option>
+    </select>
+  </div>
+
+  <div class="bg-slate-800 p-6 rounded-2xl">
+    <h2 class="text-xl font-semibold mb-4 text-emerald-400">Indicadores Diários</h2>
+
+    <div class="grid md:grid-cols-5 gap-4">
+      <input type="number" id="energia" min="1" max="5" placeholder="Energia (1-5)" class="bg-slate-700 p-2 rounded">
+      <input type="number" id="foco" min="1" max="5" placeholder="Foco (1-5)" class="bg-slate-700 p-2 rounded">
+      <input type="number" id="libido" min="1" max="5" placeholder="Libido (1-5)" class="bg-slate-700 p-2 rounded">
+      <input type="number" id="forca" min="1" max="5" placeholder="Força (1-5)" class="bg-slate-700 p-2 rounded">
+      <input type="number" id="humor" min="1" max="5" placeholder="Humor (1-5)" class="bg-slate-700 p-2 rounded">
+    </div>
+
+    <button onclick="salvarPerformance()" class="mt-4 bg-emerald-500 px-6 py-2 rounded-xl font-semibold">
+      Salvar Indicadores
+    </button>
+
+    <div id="score" class="mt-4 text-lg font-bold"></div>
+  </div>
+
+  <div class="bg-slate-800 p-6 rounded-2xl">
+    <h2 class="text-xl font-semibold mb-3 text-emerald-400">Hidratação</h2>
+    <input type="number" id="aguaTotal" placeholder="Total de água (ml)" class="bg-slate-700 p-2 rounded">
+    <button onclick="verificarAgua()" class="ml-2 bg-blue-500 px-4 py-2 rounded-xl">
+      Verificar
+    </button>
+    <div id="aguaStatus" class="mt-3 font-semibold"></div>
+  </div>
+
+</div>
+
+<script>
+const today = new Date();
+const week = Math.ceil((((today - new Date(today.getFullYear(),0,1)) / 86400000) + new Date(today.getFullYear(),0,1).getDay()+1)/7);
+const cycleStatus = document.getElementById("cycleStatus");
+
+if(week % 4 === 0){
+  cycleStatus.innerText = "🔴 Semana de Descanso";
+  cycleStatus.className = "bg-red-600 px-4 py-2 rounded-xl font-semibold";
+}else{
+  cycleStatus.innerText = "🟢 Semana Ativa";
+  cycleStatus.className = "bg-emerald-600 px-4 py-2 rounded-xl font-semibold";
+}
+
+function toggle(el){
+  el.classList.toggle("bg-emerald-600");
+}
+
+function salvarPerformance(){
+  let energia = parseInt(document.getElementById("energia").value || 0);
+  let foco = parseInt(document.getElementById("foco").value || 0);
+  let libido = parseInt(document.getElementById("libido").value || 0);
+  let forca = parseInt(document.getElementById("forca").value || 0);
+  let humor = parseInt(document.getElementById("humor").value || 0);
+
+  let media = (energia+foco+libido+forca+humor)/5;
+
+  let status = "";
+  if(media >= 4){
+    status = "🔥 Performance Ótima";
+  }else if(media >=3){
+    status = "⚡ Boa, mas pode melhorar";
+  }else{
+    status = "⚠ Ajustar sono / hidratação / dose";
+  }
+
+  document.getElementById("score").innerText = "Score: " + media.toFixed(1) + " - " + status;
+}
+
+function verificarAgua(){
+  let total = parseInt(document.getElementById("aguaTotal").value || 0);
+  let status = document.getElementById("aguaStatus");
+
+  if(total >= 2500){
+    status.innerText = "💧 Hidratação Ideal";
+    status.className = "text-emerald-400 font-bold";
+  }else if(total >= 2000){
+    status.innerText = "💧 Quase lá";
+    status.className = "text-yellow-400 font-bold";
+  }else{
+    status.innerText = "⚠ Aumentar ingestão de água";
+    status.className = "text-red-400 font-bold";
+  }
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
