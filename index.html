@@ -127,6 +127,20 @@ function verificarAgua(){
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+  // Solicitar permissão de notificação
+if ("Notification" in window) {
+  Notification.requestPermission();
+}
+
+// Verificar horário 07:30
+setInterval(() => {
+  const now = new Date();
+  if (now.getHours() === 7 && now.getMinutes() === 30) {
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage("showNotification");
+    }
+  }
+}, 60000);
 </script>
 
 </body>
