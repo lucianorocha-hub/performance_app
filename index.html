@@ -127,19 +127,50 @@ function verificarAgua(){
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
-  // Solicitar permissão de notificação
+  // Solicitar permissão
 if ("Notification" in window) {
   Notification.requestPermission();
 }
 
-// Verificar horário 07:30
+function enviarNotificacao(title, body){
+  if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: "notify",
+      title: title,
+      body: body
+    });
+  }
+}
+
 setInterval(() => {
   const now = new Date();
-  if (now.getHours() === 7 && now.getMinutes() === 30) {
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage("showNotification");
-    }
+  const h = now.getHours();
+  const m = now.getMinutes();
+
+  // Mix 07:30
+  if (h === 7 && m === 30) {
+    enviarNotificacao("🌿 Hora do Mix!",
+      "Tome sua dose para máxima performance 💪");
   }
+
+  // Água 06:00
+  if (h === 6 && m === 0) {
+    enviarNotificacao("💧 Hidratação",
+      "500ml agora para ativar o metabolismo 🚀");
+  }
+
+  // Pós treino 09:30
+  if (h === 9 && m === 30) {
+    enviarNotificacao("💧 Reidratação",
+      "Reposição pós treino é essencial 💪");
+  }
+
+  // Tarde 14:30
+  if (h === 14 && m === 30) {
+    enviarNotificacao("💧 Hidratação da Tarde",
+      "Evite queda de energia, beba água!");
+  }
+
 }, 60000);
 </script>
 
